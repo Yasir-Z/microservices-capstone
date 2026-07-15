@@ -2,3 +2,6 @@ flask
 
 # python lint test
 pylint
+
+# function/unit test
+pytest
