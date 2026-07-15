@@ -5,3 +5,9 @@ pylint
 
 # function/unit test
 pytest
+
+# SAST Testing
+bandit
+
+# Dependency Scaning
+pip-audit
