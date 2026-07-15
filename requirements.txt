@@ -11,3 +11,6 @@ bandit
 
 # Dependency Scaning
 pip-audit
+
+#Environment variable handling
+python-dotenv

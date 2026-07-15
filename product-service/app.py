@@ -5,7 +5,12 @@ This module handles product discovery operations including health checks,
 fetching all products, and retrieving specific products by ID.
 """
 
+import os
 from flask import Flask, jsonify
+from dotenv import load_dotenv
+
+# Load local environment variables from a .env file if it exists
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -38,4 +43,9 @@ def get_product(product_id):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002) # nosec B104
+    # Default to secure 127.0.0.1 for local runs; override to 0.0.0.0 in Docker/K8s
+    host_ip = os.getenv('HOST_IP', '127.0.0.1')
+    # Default to port 5002, but cast to an integer
+    port_num = int(os.getenv('PORT', 5002))
+
+    app.run(host=host_ip, port=port_num)  # nosec B104

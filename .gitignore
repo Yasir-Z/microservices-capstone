@@ -14,3 +14,7 @@ order-service/.venv/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Environment Files
+**/.env
+.env
