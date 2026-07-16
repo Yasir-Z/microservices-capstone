@@ -26,12 +26,12 @@ FROM python:3.12-slim AS runtime
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
-COPY /opt/venv /opt/venv
+COPY --from=builder /opt/venv /opt/venv
 
-COPY . . 
+COPY ./product-service . 
 
 EXPOSE 5000
 
