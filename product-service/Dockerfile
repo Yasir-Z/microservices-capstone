@@ -1,6 +1,41 @@
-FROM python:3.9-slim
+FROM python:3.12-slim AS builder 
+
 WORKDIR /app
-COPY app.py .
-RUN pip install flask
-EXPOSE 5002
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ==========================================
+# STAGE 2: Runtime (The minimal production image)
+# ==========================================
+
+FROM python:3.12-slim AS runtime
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+    PATH="/opt/venv/bin:$PATH"
+
+COPY /opt/venv /opt/venv
+
+COPY . . 
+
+EXPOSE 5000
+
+RUN useradd -u 8888 appuser && chown -R appuser:appuser /app
+USER appuser
+
 CMD ["python", "app.py"]
