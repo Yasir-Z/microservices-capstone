@@ -35,6 +35,7 @@ jobs:
   # Stage 2: BUILD, PORT ISOLATION & TEST
   build-and-test:
     name: Build & Integration Test
+    needs: security-and-lint
     runs-on: ubuntu-latest
    
     steps:
