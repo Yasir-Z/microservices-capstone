@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudShop - Microservices Capstone</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🚀</span>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                    CloudShop Dashboard
+                </h1>
+            </div>
+            <div class="flex gap-2 items-center">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs text-slate-400 font-mono">Gateway: Nginx (Port 80)</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- SECTION 1: USER MANAGEMENT -->
+        <section class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col gap-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">👤 User Service <span class="text-xs font-mono text-slate-500">(:5001)</span></h2>
+                <button onclick="fetchUsers()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition">Refresh</button>
+            </div>
+            
+            <!-- Create User Form -->
+            <form id="userForm" class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
+                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Register New User</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="userName" placeholder="Full Name" required class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
+                    <input type="email" id="userEmail" placeholder="email@example.com" required class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg text-sm transition">Create User</button>
+            </form>
+
+            <!-- Users List -->
+            <div class="flex-1">
+                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">Active Users</p>
+                <div id="usersList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- Dynamic Users -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRODUCTS -->
+        <section class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">📦 Product Service <span class="text-xs font-mono text-slate-500">(:5002)</span></h2>
+                <button onclick="fetchProducts()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition">Refresh</button>
+            </div>
+            <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Available Products</p>
+            <div id="productsList" class="space-y-3 flex-1 max-h-96 overflow-y-auto pr-1">
+                <!-- Dynamic Products -->
+            </div>
+        </section>
+
+        <!-- SECTION 3: ORDER CREATION (Span both columns on large screens) -->
+        <section class="bg-slate-950 p-6 rounded-2xl border border-slate-800 md:col-span-2 flex flex-col gap-6">
+            <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">🛒 Order Service <span class="text-xs font-mono text-slate-500">(:5003)</span></h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Order Creation Form -->
+                <form id="orderForm" class="space-y-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Place New Order</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Select User ID</label>
+                            <input type="number" id="orderUserId" placeholder="e.g. 1" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Select Product ID</label>
+                            <input type="number" id="orderProductId" placeholder="e.g. 1" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Quantity</label>
+                            <input type="number" id="orderQuantity" min="1" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-sm transition">Place Order</button>
+                </form>
+
+                <!-- Order Activity Log -->
+                <div class="flex flex-col">
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">Order Activity Log</p>
+                    <div id="ordersLog" class="flex-1 bg-slate-900 rounded-xl border border-slate-800/80 p-4 font-mono text-xs overflow-y-auto h-64 space-y-2">
+                        <div class="text-slate-500">// Real-time transactions will appear here...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- API Frontend Script Integration -->
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Fetch and display active users
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const data = await res.json();
+                const list = document.getElementById('usersList');
+                list.innerHTML = data.map(u => `
+                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800/60 hover:border-slate-700 transition">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-200">${u.name}</p>
+                            <p class="text-xs text-slate-400">${u.email}</p>
+                        </div>
+                        <span class="text-xs font-mono px-2 py-1 bg-slate-800 text-blue-400 rounded-md">ID: ${u.id}</span>
+                    </div>
+                `).join('') || '<p class="text-xs text-slate-500">No users created yet.</p>';
+            } catch (err) {
+                console.error('Error fetching users:', err);
+            }
+        }
+
+        // Fetch and display products
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/products`);
+                const data = await res.json();
+                const list = document.getElementById('productsList');
+                list.innerHTML = data.map(p => `
+                    <div class="flex items-center justify-between p-3.5 bg-slate-900 rounded-xl border border-slate-800/60">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">📦</span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-200">${p.name}</p>
+                                <p class="text-xs text-slate-400">Stock: ${p.stock} | Price: $${p.price}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-mono px-2 py-1 bg-slate-800 text-indigo-400 rounded-md">ID: ${p.id}</span>
+                    </div>
+                `).join('') || '<p class="text-xs text-slate-500">No products available.</p>';
+            } catch (err) {
+                console.error('Error fetching products:', err);
+            }
+        }
+
+        // Handle User Creation Form submission
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/users`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+                if (res.ok) {
+                    document.getElementById('userForm').reset();
+                    fetchUsers();
+                }
+            } catch (err) {
+                console.error('Error creating user:', err);
+            }
+        });
+
+        // Handle Order Placement Form submission
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user_id = parseInt(document.getElementById('orderUserId').value);
+            const product_id = parseInt(document.getElementById('orderProductId').value);
+            const quantity = parseInt(document.getElementById('orderQuantity').value);
+
+            const log = document.getElementById('ordersLog');
+
+            try {
+                const res = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id, product_id, quantity })
+                });
+                const data = await res.json();
+                
+                const time = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                
+                if (res.status === 201) {
+                    logEntry.className = "text-emerald-400 border-l-2 border-emerald-500 pl-2 py-0.5";
+                    logEntry.innerHTML = `[${time}] ORDER SUCCESS! <br/> ID: ${data.id} | User: ${data.user_id} | Product: ${data.product_id} | Status: ${data.status}`;
+                } else {
+                    logEntry.className = "text-rose-400 border-l-2 border-rose-500 pl-2 py-0.5";
+                    logEntry.innerHTML = `[${time}] ORDER FAILED: ${data.message || 'Verification Error'}`;
+                }
+                log.prepend(logEntry);
+            } catch (err) {
+                console.error('Error placing order:', err);
+            }
+        });
+
+        // Initial Data Fetch on Page Load
+        fetchUsers();
+        fetchProducts();
+    </script>
+</body>
+</html>

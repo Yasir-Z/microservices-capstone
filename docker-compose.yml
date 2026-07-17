@@ -2,37 +2,36 @@ services:
 
   user-service:
     image: user-service:latest
-    ports:
-      - "5001:5001"
     environment:
       - HOST_IP=0.0.0.0
-      - PORT=5001
+    expose:
+      - "5001"
        
   product-service:
     image: product-service:latest
-    ports:
-      - "5002:5002"
     environment:
       - HOST_IP=0.0.0.0
-      - PORT=5002
+    expose:
+      - "5002"
 
   order-service:
     image: order-service:latest
-    ports:
-      - "5003:5003"
     environment:
       - HOST_IP=0.0.0.0
-      - PORT=5003
+    expose:
+      - "5003"
+
   nginx:
     image: nginx:alpine
     container_name: api-gateway
     ports:
-      - "80:80"
+      - "80:80"  # ONLY keep ports exposed on Nginx
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - user-service
       - product-service
       - order-service
 
-  
+
