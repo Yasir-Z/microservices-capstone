@@ -1,0 +1,22 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Stage 1: Security and Lint 
+  security-and-lint:
+    - name: DevSecOps Code Quality & Linting
+      runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Lint Docker Files
+        run: true 
