@@ -23,3 +23,11 @@ jobs:
         with:
           recursive: true
           failure-threshold: error
+
+      - name: Scan Repository for Secrets & Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-format: 'table'
+          exit-code: '1'          
+          severity: 'CRITICAL,HIGH'
