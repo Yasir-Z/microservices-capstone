@@ -18,5 +18,8 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Lint Docker Files
-        run: true 
+      - name: Lint Dockerfiles (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
+          failure-threshold: error
