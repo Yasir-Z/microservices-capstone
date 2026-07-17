@@ -1,16 +1,7 @@
-flask
+Flask==3.1.0
+python-dotenv==1.1.1
 
-# python lint test
-pylint
-
-# function/unit test
-pytest
-
-# SAST Testing
-bandit
-
-# Dependency Scaning
-pip-audit
-
-#Environment variable handling
-python-dotenv
+pytest==8.4.1
+pylint==3.3.8
+bandit==1.8.6
+pip-audit==2.9.0
