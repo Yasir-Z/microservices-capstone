@@ -2,6 +2,9 @@ services:
 
   user-service:
     image: user-service:latest
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile        
     environment:
       - HOST_IP=0.0.0.0
     expose:
@@ -9,6 +12,9 @@ services:
        
   product-service:
     image: product-service:latest
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
     environment:
       - HOST_IP=0.0.0.0
     expose:
@@ -16,6 +22,9 @@ services:
 
   order-service:
     image: order-service:latest
+    build:
+      context: order-service
+      dockerfile: Dockerfile
     environment:
       - HOST_IP=0.0.0.0
     expose:
