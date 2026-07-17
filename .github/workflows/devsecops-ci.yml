@@ -11,11 +11,11 @@ on:
 jobs:
   # Stage 1: Security and Lint 
   security-and-lint:
-    - name: DevSecOps Code Quality & Linting
-      runs-on: ubuntu-latest
+    name: DevSecOps Code Quality & Linting
+    runs-on: ubuntu-latest
       
     steps:
-      - name: Checkout Code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Lint Docker Files
