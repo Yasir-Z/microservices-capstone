@@ -25,9 +25,9 @@ jobs:
           failure-threshold: error
 
       - name: Scan Repository for Secrets & Vulnerabilities
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: 'fs'
-          scan-format: 'table'
+          format: 'table'
           exit-code: '1'          
           severity: 'CRITICAL,HIGH'
