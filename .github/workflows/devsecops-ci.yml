@@ -54,7 +54,7 @@ jobs:
           docker compose up -d
           sleep 12
       
-      - name: - Assert Port Isolation (DevSecOps Gate)
+      - name: Assert Port Isolation (DevSecOps Gate)
         run: |
           echo "Verifying host network isolation..."
           # This request MUST fail because host port forwarding is completely blocked
