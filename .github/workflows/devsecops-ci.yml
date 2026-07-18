@@ -91,12 +91,12 @@ jobs:
 
    # STAGE 3: CONTAINER SCANNING & SECURE DEPLOY
       
-    scan-and-deploy:
+  scan-and-deploy:
     name: Image Scan & Registry Delivery
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        
+     
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v    
