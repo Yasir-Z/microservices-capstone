@@ -54,9 +54,14 @@ jobs:
           docker compose up -d
           sleep 12
       
-
-
-
-  
+      - name: - Assert Port Isolation (DevSecOps Gate)
+        run: |
+          echo "Verifying host network isolation..."
+          # This request MUST fail because host port forwarding is completely blocked
+          if curl --max-time 3 http://localhost:5001/users; then
+            echo "SECURITY BREACH: Backend container port 5001 is accessible on the host!" && exit 1
+          else
+            echo "Port Isolation Verified: Microservices hidden successfully behind API Gateway."
+          fi
 
 
