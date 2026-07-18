@@ -125,7 +125,7 @@ jobs:
           
           for SERVICE in "${SERVICES[@]}"; do
             echo "Building $SERVICE..."
-            docker build --no-cache -f ${SERVICE}/Dockerfile -t ${REGISTRY}/${SERVICE}:${{ env.SHA_TAG }} ./${SERVICE}
+            docker build --no-cache -f ${SERVICE}/Dockerfile -t ${REGISTRY}/${SERVICE}:${{ env.SHA_TAG }} .
           done
 
       - name: Scan All Microservice Images for OS-Level Vulnerabilities
