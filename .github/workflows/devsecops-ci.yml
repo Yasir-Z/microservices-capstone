@@ -64,4 +64,26 @@ jobs:
             echo "Port Isolation Verified: Microservices hidden successfully behind API Gateway."
           fi
 
+      - name: Run Gateway Integration Tests
+        run: |
+          echo "Executing end-to-end Nginx Routing Tests..."
+          
+          # 1. Verify static frontend serves correctly
+          curl -f http://localhost/
+
+          # 2. Verify dynamic user registration and creation
+          USER_RESPONSE=$(curl -s -X POST http://localhost/users \
+            -H "Content-Type: application/json" \
+            -d '{"name": "Pipeline Test User", "email": "devsecops@cloudshop.com"}')
+          
+          echo "User Creation Response: $USER_RESPONSE"
+          
+          if [[ "$USER_RESPONSE" == *"devsecops@cloudshop.com"* ]]; then
+            echo "API Gateway Integration Flow OK!"
+          else
+            echo "Integration Flow Failed!" && exit 1
+          fi
+
+    
+
 
