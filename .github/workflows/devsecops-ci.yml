@@ -110,8 +110,17 @@ jobs:
           -f user-service/Dockerfile \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest .
 
+      - name: Scan Built Image for OS-Level Vulnerabilities
+        uses: aquasecurity/trivy-action@v0 35.0
+        with:
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest'
+          formate: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL'
 
-                  
+
+        
 
 
       
