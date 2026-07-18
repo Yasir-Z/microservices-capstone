@@ -128,6 +128,18 @@ jobs:
             docker build --no-cache -f ${SERVICE}/Dockerfile -t ${REGISTRY}/${SERVICE}:${{ env.SHA_TAG }} .
           done
 
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
+          gpg --dearmor | \
+          sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | \
+          sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+          
       - name: Scan All Microservice Images for OS-Level Vulnerabilities
         run: |
           # Define array of your project images matching registry target
