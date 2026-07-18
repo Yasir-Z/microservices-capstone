@@ -9,7 +9,9 @@ on:
       - main
 
 jobs:
-  # Stage 1: Security and Lint 
+  # ==========================================
+  # STAGE 1: SECURITY AND LINT 
+  # ==========================================
   security-and-lint:
     name: DevSecOps Code Quality & Linting
     runs-on: ubuntu-latest
@@ -32,7 +34,9 @@ jobs:
           exit-code: '1'          
           severity: 'CRITICAL,HIGH'
 
-  # Stage 2: BUILD, PORT ISOLATION & TEST
+  # ==========================================
+  # STAGE 2: BUILD, PORT ISOLATION & TEST
+  # ==========================================
   build-and-test:
     name: Build & Integration Test
     needs: security-and-lint
@@ -89,8 +93,9 @@ jobs:
         run: |
           docker compose down --volumes --remove-orphans                
 
-   # STAGE 3: CONTAINER SCANNING & SECURE DEPLOY
-      
+  # ==========================================
+  # STAGE 3: CONTAINER SCANNING & SECURE DEPLOY
+  # ==========================================
   scan-and-deploy:
     name: Image Scan & Registry Delivery
     needs: build-and-test
@@ -104,33 +109,55 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build User Service Image
+      - name: Extract Short Git Commit SHA
+        id: git_meta
         run: |
-          docker build \
-           --no-cache \
-          -f user-service/Dockerfile \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest .
+          # Store the 7-character short SHA into the environment variables context
+          SHA_TAG=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "SHA_TAG=${SHA_TAG}" >> $GITHUB_ENV
+          echo "Extracted short SHA tag: ${SHA_TAG}"
 
-      - name: Scan Built Image for OS-Level Vulnerabilities
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest'
-          formate: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          severity: 'CRITICAL'
+      - name: Build Microservice Images Locally
+        run: |
+          # Dynamically loop and build each service using its own Dockerfile context
+          REGISTRY="${{ secrets.DOCKERHUB_USERNAME }}"
+          SERVICES=("user-service" "product-service" "order-service")
+          
+          for SERVICE in "${SERVICES[@]}"; do
+            echo "Building $SERVICE..."
+            docker build --no-cache -f ${SERVICE}/Dockerfile -t ${REGISTRY}/${SERVICE}:${{ env.SHA_TAG }} ./${SERVICE}
+          done
 
-      - name: Login to Dockerhub Registery 
+      - name: Scan All Microservice Images for OS-Level Vulnerabilities
+        run: |
+          # Define array of your project images matching registry target
+          IMAGES=(
+            "${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ env.SHA_TAG }}"
+            "${{ secrets.DOCKERHUB_USERNAME }}/product-service:${{ env.SHA_TAG }}"
+            "${{ secrets.DOCKERHUB_USERNAME }}/order-service:${{ env.SHA_TAG }}"
+          )
+
+          # Loop through and scan each target image back-to-back using native Trivy CLI
+          for IMAGE in "${IMAGES[@]}"; do
+            echo "--------------------------------------------------------"
+            echo "Scanning Target Image: $IMAGE"
+            echo "--------------------------------------------------------"
+            trivy image --format table --exit-code 1 --ignore-unfixed --severity CRITICAL "$IMAGE"
+          done
+
+      - name: Login to Dockerhub Registry 
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}        
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push Secure Production Images
+      - name: Push Secure Production Images (Short SHA Only)
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
-
-
-      
-
-
+          # Push all pristine, scan-passed images to the remote hub registry
+          REGISTRY="${{ secrets.DOCKERHUB_USERNAME }}"
+          SERVICES=("user-service" "product-service" "order-service")
+          
+          echo "Delivering production artifacts with tag: ${{ env.SHA_TAG }}"
+          for SERVICE in "${SERVICES[@]}"; do
+            docker push ${REGISTRY}/${SERVICE}:${{ env.SHA_TAG }}
+          done
