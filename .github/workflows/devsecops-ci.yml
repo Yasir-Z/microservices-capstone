@@ -107,6 +107,7 @@ jobs:
       - name: Build User Service Image
         run: |
           docker build \
+           --no-cache \
           -f user-service/Dockerfile \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest .
 
