@@ -1,0 +1,12 @@
+{{/* Instantiate User Service */}}
+{{ include "microservice.deployment" (dict "serviceName" "user-service" "config" .Values.userService "Values" .Values) }}
+
+---
+
+{{/* Instantiate Product Service */}}
+{{ include "microservice.deployment" (dict "serviceName" "product-service" "config" .Values.productService "Values" .Values) }}
+
+---
+
+{{/* Instantiate Order Service */}}
+{{ include "microservice.deployment" (dict "serviceName" "order-service" "config" .Values.orderService "Values" .Values) }}
