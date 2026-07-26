@@ -24,11 +24,20 @@ spec:
 
         - name: frontend
 
-          image: shepherd777/frontend:3067d41
+          image: shepherd777/frontend:v2
           imagePullPolicy: Always
 
           ports:
             - containerPort: 80
+
+        - name: nginx-exporter
+
+          image: nginx/nginx-prometheus-exporter:1.4.0
+          args:
+            - "-nginx.scrape-uri=http://127.0.0.1/nginx_status"
+
+          ports:
+            - containerPort: 9113
 
           resources:
 

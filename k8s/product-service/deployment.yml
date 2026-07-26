@@ -8,7 +8,7 @@ metadata:
     app: product-service
 
 spec:
-  replicas: 2
+  replicas: 1
 
   selector:
     matchLabels:
@@ -23,7 +23,7 @@ spec:
       containers:
         - name: product-service
 
-          image: shepherd777/product-service:3067d41
+          image: shepherd777/product-service:v2
           imagePullPolicy: Always
 
           ports:

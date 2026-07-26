@@ -7,12 +7,37 @@ and provides endpoints to retrieve, create, and delete user details.
 
 import os
 from flask import Flask, jsonify, request
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from dotenv import load_dotenv
 
 # Load local environment variables from a .env file if it exists
 load_dotenv()
 
 app = Flask(__name__)
+
+REQUEST_COUNT = Counter(
+    "user_service_requests_total",
+    "Total HTTP requests",
+    ["method", "endpoint", "status"]
+)
+
+
+@app.after_request
+def after_request(response):
+
+    REQUEST_COUNT.labels(
+        request.method,
+        request.path,
+        response.status_code
+    ).inc()
+
+    return response
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {
+        "Content-Type": CONTENT_TYPE_LATEST
+    }
 
 users = [
     {"id": 1, "name": "Ahmed", "email": "ahmed@example.com"},
